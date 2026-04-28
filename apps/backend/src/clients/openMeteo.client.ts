@@ -1,6 +1,11 @@
-import pRetry from "p-retry";
-import { z } from "zod";
-import { AppError } from "../lib/errors.js";
+import pRetry, { AbortError } from "p-retry";
+import { z, ZodError } from "zod";
+import {
+  isAppError,
+  locationNotFoundError,
+  weatherProviderBadResponseError,
+  weatherProviderUnavailableError
+} from "../lib/errors.js";
 import type { Location, WeatherDay } from "../domain/weather/types.js";
 
 const geocodingSchema = z.object({
@@ -32,25 +37,54 @@ export type OpenMeteoClient = {
   getDailyForecast(location: Location): Promise<WeatherDay[]>;
 };
 
+const isRetryableStatus = (status: number): boolean =>
+  status === 408 || status === 429 || status >= 500;
+
 const fetchJson = async (url: URL): Promise<unknown> => {
-  const response = await pRetry(
-    async () => {
-      const result = await fetch(url, {
-        signal: AbortSignal.timeout(5000)
-      });
+  try {
+    const response = await pRetry(
+      async () => {
+        const result = await fetch(url, {
+          signal: AbortSignal.timeout(5000)
+        });
 
-      if (!result.ok) {
-        throw new AppError(`Open-Meteo request failed with ${result.status}`, "OPEN_METEO_REQUEST_FAILED");
+        if (!result.ok) {
+          const error = weatherProviderUnavailableError(
+            new Error(`Open-Meteo request failed with ${result.status}`)
+          );
+
+          if (!isRetryableStatus(result.status)) {
+            throw new AbortError(error);
+          }
+
+          throw error;
+        }
+
+        return result;
+      },
+      {
+        factor: 2,
+        minTimeout: 25,
+        retries: 2
       }
+    );
 
-      return result;
-    },
-    {
-      retries: 2
+    return await parseJsonResponse(response);
+  } catch (error) {
+    if (isAppError(error)) {
+      throw error;
     }
-  );
 
-  return response.json();
+    throw weatherProviderUnavailableError(error);
+  }
+};
+
+const parseJsonResponse = async (response: Response): Promise<unknown> => {
+  try {
+    return await response.json();
+  } catch (error) {
+    throw weatherProviderBadResponseError(error);
+  }
 };
 
 export const createOpenMeteoClient = (): OpenMeteoClient => ({
@@ -61,11 +95,11 @@ export const createOpenMeteoClient = (): OpenMeteoClient => ({
     url.searchParams.set("language", "en");
     url.searchParams.set("format", "json");
 
-    const payload = geocodingSchema.parse(await fetchJson(url));
+    const payload = parseProviderPayload(geocodingSchema, await fetchJson(url));
     const location = payload.results?.[0];
 
     if (!location) {
-      throw new AppError(`No location found for "${city}"`, "LOCATION_NOT_FOUND", 404);
+      throw locationNotFoundError(city);
     }
 
     return location;
@@ -88,7 +122,7 @@ export const createOpenMeteoClient = (): OpenMeteoClient => ({
     url.searchParams.set("forecast_days", "7");
     url.searchParams.set("timezone", "auto");
 
-    const payload = forecastSchema.parse(await fetchJson(url));
+    const payload = parseProviderPayload(forecastSchema, await fetchJson(url));
 
     return payload.daily.time.map((date, index) => ({
       date,
@@ -100,3 +134,18 @@ export const createOpenMeteoClient = (): OpenMeteoClient => ({
     }));
   }
 });
+
+const parseProviderPayload = <Schema extends z.ZodTypeAny>(
+  schema: Schema,
+  payload: unknown
+): z.infer<Schema> => {
+  try {
+    return schema.parse(payload);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw weatherProviderBadResponseError(error);
+    }
+
+    throw error;
+  }
+};

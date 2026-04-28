@@ -7,6 +7,7 @@ import {
   type ActivityRankingsQuery,
   type ActivityRankingsQueryVariables
 } from "./api/generated";
+import { getActivityRankingErrorMessage } from "./api/errorMessages";
 
 export function App() {
   const [city, setCity] = useState("Cape Town");
@@ -25,7 +26,7 @@ export function App() {
 
       <CitySearch isLoading={fetching} onSearch={(nextCity) => setCity(nextCity.trim())} />
 
-      {error ? <p className="state state--error">{error.message}</p> : null}
+      {error ? <p className="state state--error">{getActivityRankingErrorMessage(error)}</p> : null}
       {fetching ? <p className="state">Checking the seven-day forecast...</p> : null}
       {data?.activityRankings ? <RankingResults result={data.activityRankings} /> : null}
     </main>

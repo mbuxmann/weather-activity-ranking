@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { AppError } from "../../src/lib/errors.js";
 import { createRankingService } from "../../src/services/ranking.service.js";
 
 describe("ranking service", () => {
@@ -38,5 +39,21 @@ describe("ranking service", () => {
         }
       ]
     });
+  });
+
+  it("rejects empty city input with an INVALID_CITY app error", async () => {
+    const service = createRankingService({
+      async searchLocation() {
+        throw new Error("searchLocation should not be called");
+      },
+      async getDailyForecast() {
+        throw new Error("getDailyForecast should not be called");
+      }
+    });
+
+    await expect(service.getActivityRankings("   ")).rejects.toMatchObject({
+      code: "INVALID_CITY"
+    });
+    await expect(service.getActivityRankings("   ")).rejects.toBeInstanceOf(AppError);
   });
 });

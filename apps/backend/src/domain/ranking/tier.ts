@@ -8,5 +8,5 @@ export type TierRule = {
  * Used by scoring functions to express threshold-based bonuses as a
  * declarative table instead of nested ternaries.
  */
-export const tier = (value: number, rules: TierRule[]): number =>
+export const tier = (value: number, rules: readonly TierRule[]): number =>
   rules.find((rule) => rule.when(value))?.points ?? 0;

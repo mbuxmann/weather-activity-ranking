@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "bun run generate:gql && turbo build",
-    "dev": "bun run generate:gql && turbo dev",
+    "dev": "bun run generate:gql && turbo dev --filter=backend --filter=frontend",
     "generate": "bun run generate:gql",
     "generate:gql": "bun run --filter frontend generate",
     "test": "turbo test",

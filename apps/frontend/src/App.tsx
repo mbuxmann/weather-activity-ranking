@@ -6,7 +6,7 @@ import {
   ActivityRankingsDocument,
   type ActivityRankingsQuery,
   type ActivityRankingsQueryVariables
-} from "./gql/graphql";
+} from "./api/generated";
 
 export function App() {
   const [city, setCity] = useState("Cape Town");

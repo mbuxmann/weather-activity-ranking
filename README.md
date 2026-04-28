@@ -29,7 +29,7 @@ apps/
     src/
       api/          # urql client and GraphQL operation documents
       components/   # React presentation components
-      gql/          # Generated frontend GraphQL operation types
+      api/generated.ts # Generated frontend GraphQL operation types
 packages/
   contracts/        # Shared schema.graphql contract
 ```

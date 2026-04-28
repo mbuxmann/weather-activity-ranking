@@ -4,10 +4,10 @@ const config: CodegenConfig = {
   schema: "../../packages/contracts/schema.graphql",
   documents: ["src/**/*.graphql"],
   generates: {
-    "src/gql/": {
-      preset: "client",
-      presetConfig: {
-        gqlTagName: "graphql"
+    "src/api/generated.ts": {
+      plugins: ["typescript", "typescript-operations", "typed-document-node"],
+      config: {
+        enumsAsTypes: true
       }
     }
   }

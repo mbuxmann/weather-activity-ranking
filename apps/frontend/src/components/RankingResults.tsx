@@ -1,4 +1,4 @@
-import type { ActivityRankingsQuery } from "../gql/graphql";
+import type { ActivityRankingsQuery } from "../api/generated";
 import { ActivityRankingCard } from "./ActivityRankingCard";
 
 type RankingResultsProps = {

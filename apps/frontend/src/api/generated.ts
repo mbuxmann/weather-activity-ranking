@@ -1,7 +1,6 @@
-/* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
-export type InputMaybe<T> = T | null | undefined;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -16,12 +15,11 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export enum Activity {
-  IndoorSightseeing = 'INDOOR_SIGHTSEEING',
-  OutdoorSightseeing = 'OUTDOOR_SIGHTSEEING',
-  Skiing = 'SKIING',
-  Surfing = 'SURFING'
-}
+export type Activity =
+  | 'INDOOR_SIGHTSEEING'
+  | 'OUTDOOR_SIGHTSEEING'
+  | 'SKIING'
+  | 'SURFING';
 
 export type ActivityRankingResult = {
   __typename?: 'ActivityRankingResult';

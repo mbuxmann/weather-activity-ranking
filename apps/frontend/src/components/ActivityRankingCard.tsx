@@ -1,4 +1,4 @@
-import type { ActivityRankingsQuery } from "../gql/graphql";
+import type { ActivityRankingsQuery } from "../api/generated";
 
 type ActivityScore = ActivityRankingsQuery["activityRankings"]["days"][number]["rankings"][number];
 

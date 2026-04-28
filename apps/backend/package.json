@@ -1,0 +1,26 @@
+{
+  "name": "@weather-ranking/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@weather-ranking/contracts": "workspace:*",
+    "graphql": "^16.11.0",
+    "graphql-yoga": "^5.13.4",
+    "hono": "^4.7.8",
+    "p-retry": "^6.2.1",
+    "pino": "^9.6.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "vitest": "^3.1.2"
+  }
+}

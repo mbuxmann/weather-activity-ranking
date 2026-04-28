@@ -1,7 +1,11 @@
 {
   "name": "weather-ranking-app",
   "private": true,
-  "packageManager": "pnpm@10.2.1",
+  "packageManager": "bun@1.3.3",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",

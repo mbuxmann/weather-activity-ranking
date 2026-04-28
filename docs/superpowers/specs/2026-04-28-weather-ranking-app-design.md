@@ -6,7 +6,7 @@ Build a small TypeScript web application for a senior engineering take-home. The
 
 ## Architecture
 
-Use a Turborepo monorepo with pnpm workspaces. The backend lives in `apps/backend`, the frontend lives in `apps/frontend`, and shared GraphQL contract assets live in `packages/contracts`.
+Use a Turborepo monorepo with Bun workspaces. The backend lives in `apps/backend`, the frontend lives in `apps/frontend`, and shared GraphQL contract assets live in `packages/contracts`.
 
 The backend uses Hono as the HTTP application and GraphQL Yoga at `/graphql`. Resolvers stay thin and delegate to `ranking.service.ts`. The service orchestrates city lookup, weather lookup, and pure ranking logic. Ranking code lives in `domain/ranking` and does not depend on Hono, GraphQL, or Open-Meteo response shapes.
 

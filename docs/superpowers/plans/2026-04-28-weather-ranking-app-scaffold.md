@@ -6,7 +6,7 @@
 
 **Architecture:** The root workspace coordinates builds through Turborepo. Backend logic is separated into GraphQL, service, client, and pure domain modules. Frontend code owns rendering and GraphQL query execution only.
 
-**Tech Stack:** pnpm, Turborepo, TypeScript, Hono, GraphQL Yoga, React, Vite, urql, Vitest, Zod, Pino, p-retry.
+**Tech Stack:** Bun, Turborepo, TypeScript, Hono, GraphQL Yoga, React, Vite, urql, Vitest, Zod, Pino, p-retry.
 
 ---
 
@@ -14,20 +14,19 @@
 
 **Files:**
 - Create: `package.json`
-- Create: `pnpm-workspace.yaml`
 - Create: `turbo.json`
 - Create: `tsconfig.base.json`
 - Create: `.gitignore`
 
 - [x] **Step 1: Add root workspace files**
 
-Create pnpm workspace and Turbo scripts for `build`, `dev`, `test`, and `typecheck`.
+Create Bun workspace and Turbo scripts for `build`, `dev`, `test`, and `typecheck`.
 
 - [x] **Step 2: Verify workspace discovery**
 
-Run: `pnpm install`
+Run: `bun install`
 
-Expected: pnpm installs all workspace dependencies.
+Expected: Bun installs all workspace dependencies.
 
 ### Task 2: Shared Contract Package
 
@@ -43,7 +42,7 @@ Define `activityRankings(city: String!)` and related ranking types.
 
 - [x] **Step 2: Build the package**
 
-Run: `pnpm --filter @weather-ranking/contracts build`
+Run: `bun --filter contracts build`
 
 Expected: TypeScript emits `dist`.
 
@@ -61,7 +60,7 @@ Create compileable modules with a simple replaceable ranking implementation.
 
 - [x] **Step 2: Verify backend tests**
 
-Run: `pnpm --filter @weather-ranking/backend test`
+Run: `bun --filter backend test`
 
 Expected: all backend tests pass.
 
@@ -80,7 +79,7 @@ Create a minimal city search UI and result cards.
 
 - [x] **Step 2: Verify frontend build**
 
-Run: `pnpm --filter @weather-ranking/frontend build`
+Run: `bun --filter frontend build`
 
 Expected: Vite builds successfully.
 
@@ -95,6 +94,6 @@ Explain the stack choices, AI usage, and current omissions.
 
 - [x] **Step 2: Run full workspace checks**
 
-Run: `pnpm build`, `pnpm test`, and `pnpm typecheck`.
+Run: `bun run build`, `bun run test`, and `bun run typecheck`.
 
 Expected: all checks complete successfully.

@@ -4,7 +4,7 @@ Small TypeScript take-home project that ranks how desirable a city will be for s
 
 ## Stack
 
-- Monorepo: pnpm workspaces + Turborepo
+- Monorepo: Bun workspaces + Turborepo
 - Backend: Hono + GraphQL Yoga
 - Frontend: React + Vite + urql
 - Testing: Vitest
@@ -39,9 +39,9 @@ The frontend talks to the backend through GraphQL only. It does not import backe
 ## Run Locally
 
 ```bash
-pnpm install
-pnpm build
-pnpm dev
+bun install
+bun run build
+bun run dev
 ```
 
 Backend: `http://localhost:4000/graphql`
@@ -51,12 +51,12 @@ Frontend: `http://localhost:5173`
 ## Useful Commands
 
 ```bash
-pnpm build
-pnpm test
-pnpm typecheck
+bun run build
+bun run test
+bun run typecheck
 
-pnpm --filter @weather-ranking/backend dev
-pnpm --filter @weather-ranking/frontend dev
+bun --filter backend dev
+bun --filter frontend dev
 ```
 
 ## Current GraphQL Query

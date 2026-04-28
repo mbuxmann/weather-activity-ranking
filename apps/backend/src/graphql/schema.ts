@@ -1,4 +1,4 @@
-import { typeDefs } from "@weather-ranking/contracts";
+import { typeDefs } from "contracts";
 import { createSchema } from "graphql-yoga";
 import { createResolvers } from "./resolvers.js";
 import type { RankingService } from "../services/ranking.service.js";

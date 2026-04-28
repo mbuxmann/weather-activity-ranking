@@ -8,5 +8,3 @@ export class AppError extends Error {
     this.name = "AppError";
   }
 }
-
-export const isAppError = (error: unknown): error is AppError => error instanceof AppError;

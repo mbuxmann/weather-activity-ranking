@@ -8,6 +8,7 @@ ARG VITE_GRAPHQL_URL=http://localhost:4000/graphql
 ENV VITE_GRAPHQL_URL=$VITE_GRAPHQL_URL
 
 COPY package.json bun.lock turbo.json tsconfig.base.json ./
+COPY apps/backend/package.json apps/backend/
 COPY apps/frontend/package.json apps/frontend/
 COPY packages/contracts/package.json packages/contracts/
 

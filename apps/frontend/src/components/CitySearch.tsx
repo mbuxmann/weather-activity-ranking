@@ -11,27 +11,15 @@ import { citySearchSchema, type CitySearchValues } from "@/schemas/citySearch";
 type CitySearchProps = {
   isLoading: boolean;
   onSearch: (city: string) => void;
-  /**
-   * The externally-active city. Changes from outside (e.g. suggestion-chip
-   * picks) sync into the input via a reset, so the visible value always
-   * matches what's actually being queried.
-   */
   defaultCity?: string;
 };
 
-/**
- * A single rounded-pill input with a nested "button-in-button" submit
- * affordance. Uses shadcn's Input + Button primitives underneath, with
- * className overrides to dissolve their default chrome (border, bg)
- * inside our pill shell so they read as one continuous control.
- */
 export function CitySearch({ isLoading, onSearch, defaultCity = "Cape Town" }: CitySearchProps) {
   const form = useForm<CitySearchValues>({
     resolver: zodResolver(citySearchSchema),
     defaultValues: { city: defaultCity },
   });
 
-  // Sync the input when the active city changes from outside (e.g. chip click).
   useEffect(() => {
     if (form.getValues("city") !== defaultCity) {
       form.reset({ city: defaultCity });
@@ -58,9 +46,7 @@ export function CitySearch({ isLoading, onSearch, defaultCity = "Cape Town" }: C
         Search a city
       </Label>
 
-      {/* Outer tray (Doppelrand) */}
       <div className="shell-tray group/pill rounded-full p-1.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] focus-within:shadow-[0_0_0_4px_oklch(0.42_0.07_162/0.12)]">
-        {/* Inner core */}
         <div className="flex items-center gap-2 rounded-full bg-card pl-5 pr-1.5 shadow-[0_1px_1px_0_oklch(1_0_0/0.7)_inset,0_1px_2px_0_oklch(0.18_0.015_250/0.04)]">
           <SearchIcon
             strokeWidth={1.4}
@@ -80,7 +66,6 @@ export function CitySearch({ isLoading, onSearch, defaultCity = "Cape Town" }: C
             {...form.register("city")}
           />
 
-          {/* Button-in-button: nested circular submit, shadcn Button base */}
           <Button
             type="submit"
             disabled={isLoading}
@@ -133,4 +118,3 @@ export function CitySearch({ isLoading, onSearch, defaultCity = "Cape Town" }: C
     </form>
   );
 }
-

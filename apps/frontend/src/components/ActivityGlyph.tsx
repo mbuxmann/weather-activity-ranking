@@ -12,11 +12,6 @@ type ActivityGlyphProps = {
   className?: string;
 };
 
-/**
- * Per-activity glyphs sourced from Lucide. Each tile renders an icon inside
- * a soft circular tray; the activity name is rendered alongside, so the
- * glyph itself is purely decorative and marked aria-hidden.
- */
 export function ActivityGlyph({ activity, className }: ActivityGlyphProps) {
   const Icon = ACTIVITY_ICONS[activity];
 

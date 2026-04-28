@@ -1,16 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Activity, findBestDayPerActivity } from "contracts";
 
-/**
- * Lives in the frontend test suite (rather than `packages/contracts`)
- * because the contracts package has no test runner of its own. The
- * function under test is consumed by the frontend, so colocating the
- * test here also doubles as a contract test from the consumer side.
- */
 describe("findBestDayPerActivity", () => {
-  // -------------------------------------------------------------------------
-  // Happy path
-  // -------------------------------------------------------------------------
   it("returns the highest-scoring day per activity", () => {
     const result = findBestDayPerActivity({
       days: [
@@ -37,9 +28,6 @@ describe("findBestDayPerActivity", () => {
     ]);
   });
 
-  // -------------------------------------------------------------------------
-  // Tie-break behavior — documented contract: earlier day wins
-  // -------------------------------------------------------------------------
   it("breaks ties in favor of the earlier day", () => {
     const result = findBestDayPerActivity({
       days: [
@@ -59,11 +47,6 @@ describe("findBestDayPerActivity", () => {
     ]);
   });
 
-  // -------------------------------------------------------------------------
-  // Stable order — entries appear in the order activities are first seen,
-  // which matters for the chip strip / digest list to look the same across
-  // cities.
-  // -------------------------------------------------------------------------
   it("preserves first-seen activity order in the output", () => {
     const result = findBestDayPerActivity({
       days: [
@@ -83,9 +66,6 @@ describe("findBestDayPerActivity", () => {
     ]);
   });
 
-  // -------------------------------------------------------------------------
-  // Edge cases
-  // -------------------------------------------------------------------------
   it("returns an empty array for an empty forecast", () => {
     expect(findBestDayPerActivity({ days: [] })).toEqual([]);
   });
@@ -102,10 +82,6 @@ describe("findBestDayPerActivity", () => {
   });
 
   it("ignores extra fields on input rankings (structural typing)", () => {
-    // Real GraphQL responses carry a `reason` field too. Assigning to a
-    // variable first (rather than passing an inline literal) suppresses
-    // TS's excess-property check, so this genuinely exercises structural
-    // assignability — i.e. proves the contract accepts richer shapes.
     const richInput = {
       days: [
         {

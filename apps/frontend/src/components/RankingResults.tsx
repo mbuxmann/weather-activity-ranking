@@ -12,16 +12,6 @@ type RankingResultsProps = {
   result: ActivityRankingsQuery["activityRankings"];
 };
 
-/**
- * Renders the seven-day forecast as a flexible grid of day cards. The
- * data shape is per-day → ranked activities (matching the GraphQL
- * contract), so each card answers "what to do on this day" with the
- * winning activity featured and the runners-up listed below it.
- *
- * A summary strip above the grid surfaces the "best day across the
- * week per activity" insight as a secondary glance — keeping that
- * affordance without making it the primary axis of the page.
- */
 export function RankingResults({ result }: RankingResultsProps) {
   const rankedDays = buildRankedDays(result);
   const bestDays = findBestDayPerActivity(result);
@@ -33,7 +23,6 @@ export function RankingResults({ result }: RankingResultsProps) {
       className="mt-16 flex flex-col gap-7 sm:mt-20"
       aria-label="Activity rankings"
     >
-      {/* Location header */}
       <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
         <div className="flex flex-col gap-2 animate-rise">
           <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -52,18 +41,17 @@ export function RankingResults({ result }: RankingResultsProps) {
             variant="outline"
             className="h-auto rounded-full border-transparent bg-card px-3.5 py-1.5 text-[11px] font-medium tabular-nums text-foreground/75 shadow-[0_1px_1px_0_oklch(1_0_0/0.7)_inset] [a]:hover:bg-card"
           >
-            {result.location.latitude.toFixed(2)}° N
+            {formatCoordinate(result.location.latitude, "latitude")}
           </Badge>
           <Badge
             variant="outline"
             className="h-auto rounded-full border-transparent bg-card px-3.5 py-1.5 text-[11px] font-medium tabular-nums text-foreground/75 shadow-[0_1px_1px_0_oklch(1_0_0/0.7)_inset] [a]:hover:bg-card"
           >
-            {result.location.longitude.toFixed(2)}° E
+            {formatCoordinate(result.location.longitude, "longitude")}
           </Badge>
         </div>
       </header>
 
-      {/* Per-activity summary strip + methodology trigger */}
       <div className="flex flex-col gap-3 animate-rise animate-rise-delay-1 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <BestForActivityStrip bestDays={bestDays} />
 
@@ -95,7 +83,6 @@ export function RankingResults({ result }: RankingResultsProps) {
         </ScoringCriteriaDialog>
       </div>
 
-      {/* Per-day grid — auto-fit so the row always fills cleanly */}
       <div
         className="grid gap-3"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}
@@ -106,6 +93,15 @@ export function RankingResults({ result }: RankingResultsProps) {
       </div>
     </section>
   );
+}
+
+function formatCoordinate(value: number, axis: "latitude" | "longitude"): string {
+  const hemisphere =
+    axis === "latitude"
+      ? (value >= 0 ? "N" : "S")
+      : (value >= 0 ? "E" : "W");
+
+  return `${Math.abs(value).toFixed(2)}° ${hemisphere}`;
 }
 
 function formatRange(from?: string, to?: string): string {

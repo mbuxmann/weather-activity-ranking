@@ -3,6 +3,7 @@ import { z } from "zod";
 export const citySearchSchema = z.object({
   city: z
     .string()
+    .trim()
     .min(1, "Please enter a city or town name.")
     .min(2, "City name must be at least 2 characters.")
     .max(100, "City name must be at most 100 characters.")

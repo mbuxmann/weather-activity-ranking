@@ -3,17 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CitySearch } from "../../src/components/CitySearch";
 
-// ---------------------------------------------------------------------------
-// Integration tests — CitySearch component
-//
-// These verify the INTEGRATION between:
-//   React Hook Form  ↔  Zod schema validation  ↔  the redesigned pill UI
-//
-// We test the component as a user would interact with it (input, submit,
-// error messages), querying by accessible label/role rather than visual
-// chrome so the tests survive future style refinements.
-// ---------------------------------------------------------------------------
-
 describe("CitySearch", () => {
   const setup = (props: Partial<Parameters<typeof CitySearch>[0]> = {}) => {
     const onSearch = vi.fn();
@@ -28,9 +17,6 @@ describe("CitySearch", () => {
   const getSubmit = () =>
     screen.getByRole("button", { name: /find best activity days|searching/i });
 
-  // -------------------------------------------------------------------------
-  // Rendering
-  // -------------------------------------------------------------------------
   describe("rendering", () => {
     it("renders an accessibly-labeled input and submit button", () => {
       setup();
@@ -60,9 +46,6 @@ describe("CitySearch", () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // Positive — valid submissions
-  // -------------------------------------------------------------------------
   describe("positive (valid submissions)", () => {
     it("calls onSearch with the trimmed city name on valid submit", async () => {
       const { onSearch, user } = setup();
@@ -116,9 +99,6 @@ describe("CitySearch", () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // Negative — invalid submissions show validation errors
-  // -------------------------------------------------------------------------
   describe("negative (validation errors)", () => {
     it("shows an error when submitting an empty field", async () => {
       const { onSearch, user } = setup();
@@ -190,9 +170,6 @@ describe("CitySearch", () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // Interaction — user journey
-  // -------------------------------------------------------------------------
   describe("user interaction flow", () => {
     it("clears the validation error after correcting the input", async () => {
       const { user } = setup();
@@ -207,7 +184,6 @@ describe("CitySearch", () => {
         ).toBeInTheDocument();
       });
 
-      // Correct the input
       await user.type(input, "Paris");
       await user.click(getSubmit());
 

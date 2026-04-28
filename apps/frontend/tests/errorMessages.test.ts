@@ -3,9 +3,6 @@ import { describe, expect, it } from "vitest";
 import { getActivityRankingErrorMessage } from "../src/api/errorMessages";
 
 describe("getActivityRankingErrorMessage", () => {
-  // ---------------------------------------------------------------------------
-  // Positive — every ErrorCode from the contracts package maps to a message
-  // ---------------------------------------------------------------------------
   it("maps LOCATION_NOT_FOUND to a user-friendly message", () => {
     const error = {
       graphQLErrors: [{ extensions: { code: ErrorCode.LOCATION_NOT_FOUND } }],
@@ -60,9 +57,6 @@ describe("getActivityRankingErrorMessage", () => {
     );
   });
 
-  // ---------------------------------------------------------------------------
-  // Priority — network errors take precedence
-  // ---------------------------------------------------------------------------
   it("prioritises network errors over GraphQL error codes", () => {
     const error = {
       graphQLErrors: [{ extensions: { code: ErrorCode.INTERNAL_ERROR } }],
@@ -74,9 +68,6 @@ describe("getActivityRankingErrorMessage", () => {
     );
   });
 
-  // ---------------------------------------------------------------------------
-  // Negative — unknown or missing error codes fall back safely
-  // ---------------------------------------------------------------------------
   it("falls back to INTERNAL_ERROR for an unrecognised code", () => {
     const error = {
       graphQLErrors: [{ extensions: { code: "TOTALLY_UNKNOWN" } }],

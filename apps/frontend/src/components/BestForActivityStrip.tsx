@@ -7,12 +7,6 @@ type BestForActivityStripProps = {
   bestDays: BestDay[];
 };
 
-/**
- * A quiet summary above the day grid: "Best skiing → Tue · Best surfing
- * → Sat · …". Restores the per-activity insight without competing with
- * the per-day cards. Each entry uses shadcn Badge underneath, with
- * className overrides for our cream-card pill aesthetic.
- */
 export function BestForActivityStrip({ bestDays }: BestForActivityStripProps) {
   if (bestDays.length === 0) return null;
 

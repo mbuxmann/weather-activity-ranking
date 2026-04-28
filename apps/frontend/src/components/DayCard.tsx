@@ -10,20 +10,9 @@ import { ActivityGlyph } from "./ActivityGlyph";
 
 type DayCardProps = {
   day: RankedDay;
-  /** 1-based index used to stagger the entry animation. */
   index: number;
 };
 
-/**
- * One card per forecast day. Activities are rendered in the order
- * supplied — the backend (and our `buildRankedDays` safeguard) sorts
- * them best → worst, so the user reads "what to do today" top-down.
- *
- * Visual hierarchy:
- *   • Day header (huge weekday + date subscript)
- *   • Winner: featured row in a primary-tinted block, with reason
- *   • Runners-up: 3 compact rows, hover-tooltip exposes their reason
- */
 export function DayCard({ day, index }: DayCardProps) {
   const { weekday, date } = formatBestDay(day.date);
   const [winner, ...runnersUp] = day.rankings;
@@ -48,7 +37,6 @@ export function DayCard({ day, index }: DayCardProps) {
       aria-labelledby={`day-${day.date}-title`}
     >
       <div className="shell-core relative flex h-full flex-col gap-4 rounded-[calc(1.25rem-0.25rem)] p-4 sm:p-5">
-        {/* Header */}
         <header className="flex items-baseline justify-between gap-3">
           <div className="flex flex-col gap-0.5">
             <h3
@@ -63,10 +51,8 @@ export function DayCard({ day, index }: DayCardProps) {
           </div>
         </header>
 
-        {/* Winner — featured block */}
         <WinnerBlock ranking={winner} />
 
-        {/* Runners-up */}
         {runnersUp.length > 0 ? (
           <ul className="flex flex-col gap-px overflow-hidden rounded-xl ring-1 ring-foreground/[0.06]">
             {runnersUp.map((ranking) => (
@@ -79,10 +65,6 @@ export function DayCard({ day, index }: DayCardProps) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Winner block — primary-tinted, the day's headline answer                  */
-/* -------------------------------------------------------------------------- */
-
 function WinnerBlock({ ranking }: { ranking: Ranking }) {
   const fraction = normalizeScore(ranking.score);
   const display = displayScore(ranking.score);
@@ -94,7 +76,6 @@ function WinnerBlock({ ranking }: { ranking: Ranking }) {
       title={ranking.reason}
       aria-label={`Top pick: ${label}, score ${display} out of 10. ${ranking.reason}`}
     >
-      {/* Subtle bar at the top encoding the score */}
       <span
         className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left bg-primary/70"
         style={{ transform: `scaleX(${fraction})` }}
@@ -121,10 +102,6 @@ function WinnerBlock({ ranking }: { ranking: Ranking }) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Runner-up row — compact, reason on hover via title                        */
-/* -------------------------------------------------------------------------- */
-
 function RunnerUpRow({ ranking }: { ranking: Ranking }) {
   const fraction = normalizeScore(ranking.score);
   const display = displayScore(ranking.score);
@@ -135,7 +112,6 @@ function RunnerUpRow({ ranking }: { ranking: Ranking }) {
       aria-label={`${ActivityLabel[ranking.activity]} score ${display} out of 10. ${ranking.reason}`}
       className="relative flex items-center justify-between gap-3 bg-card px-3 py-2 transition-colors duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-foreground/[0.025]"
     >
-      {/* Underlying score-bar fill — quiet, behind the text */}
       <span
         className="pointer-events-none absolute inset-y-0 left-0 origin-left bg-foreground/[0.04]"
         style={{ width: `${fraction * 100}%` }}

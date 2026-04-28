@@ -9,7 +9,6 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
-  /* Soft Structuralism — warm cream + deep slate + refined sage */
   --background: oklch(0.985 0.006 85);
   --foreground: oklch(0.18 0.015 250);
   --card: oklch(1 0 0);
@@ -131,7 +130,6 @@
 }
 
 @layer utilities {
-  /* Fixed, non-interactive grain — renders above background, below content */
   .grain-overlay::before {
     content: "";
     position: fixed;
@@ -166,7 +164,6 @@
     }
   }
 
-  /* Hairline shell used for double-bezel cards — a soft cream tray */
   .shell-tray {
     background: linear-gradient(180deg, oklch(0.18 0.015 250 / 0.04), oklch(0.18 0.015 250 / 0.015));
     box-shadow:

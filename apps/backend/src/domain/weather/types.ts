@@ -21,8 +21,8 @@ export type WeatherDay = {
   windSpeedKph: number;
   /**
    * Marine forecast for this day, when the location has coastal data.
-   * Absent means landlocked, marine API outage, or non-coastal station —
-   * surfing should score 0 with a "no coastal forecast" reason.
+   * Absent means the location has no coastal data, or the marine endpoint
+   * did not return a matching date for this weather day.
    */
   marine?: MarineDay;
 };

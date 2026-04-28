@@ -1,19 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { citySearchSchema } from "../../src/schemas/citySearch";
 
-// ---------------------------------------------------------------------------
-// Security tests — input sanitization & injection prevention
-//
-// These verify that the Zod schema rejects potentially malicious inputs
-// BEFORE they reach the network layer (defence in depth). Even if the
-// backend validates independently, client-side rejection reduces attack
-// surface and provides instant user feedback.
-// ---------------------------------------------------------------------------
-
 describe("security: input sanitization", () => {
-  // -------------------------------------------------------------------------
-  // XSS (Cross-Site Scripting) prevention
-  // -------------------------------------------------------------------------
   describe("XSS prevention", () => {
     const xssPayloads = [
       "<script>alert('xss')</script>",
@@ -37,9 +25,6 @@ describe("security: input sanitization", () => {
     );
   });
 
-  // -------------------------------------------------------------------------
-  // SQL Injection prevention
-  // -------------------------------------------------------------------------
   describe("SQL injection prevention", () => {
     // Note: Payloads containing ONLY letters, apostrophes, hyphens, and
     // spaces (e.g. "admin'--") will pass the regex because those characters
@@ -65,9 +50,6 @@ describe("security: input sanitization", () => {
     );
   });
 
-  // -------------------------------------------------------------------------
-  // NoSQL Injection prevention
-  // -------------------------------------------------------------------------
   describe("NoSQL injection prevention", () => {
     const nosqlPayloads = [
       '{"$gt":""}',
@@ -84,9 +66,6 @@ describe("security: input sanitization", () => {
     );
   });
 
-  // -------------------------------------------------------------------------
-  // Command Injection prevention
-  // -------------------------------------------------------------------------
   describe("command injection prevention", () => {
     const cmdPayloads = [
       "; ls -la",
@@ -105,9 +84,6 @@ describe("security: input sanitization", () => {
     );
   });
 
-  // -------------------------------------------------------------------------
-  // Path Traversal prevention
-  // -------------------------------------------------------------------------
   describe("path traversal prevention", () => {
     const pathPayloads = [
       "../../../etc/passwd",
@@ -124,9 +100,6 @@ describe("security: input sanitization", () => {
     );
   });
 
-  // -------------------------------------------------------------------------
-  // Overflow / denial-of-service prevention
-  // -------------------------------------------------------------------------
   describe("overflow prevention", () => {
     it("rejects extremely long input (potential buffer overflow)", () => {
       const result = citySearchSchema.safeParse({
@@ -136,12 +109,8 @@ describe("security: input sanitization", () => {
     });
 
     it("rejects a string of only whitespace (invisible payload)", () => {
-      // Whitespace-only matches the regex but min(1) catches empty meaning
       const result = citySearchSchema.safeParse({ city: "   " });
-      // This passes regex but the trimmed submit handler in the component
-      // prevents meaningful submission. Schema allows it (whitespace = valid chars).
-      // The point is the max-length check prevents large whitespace floods.
-      expect(result.success).toBe(true); // Schema allows whitespace chars
+      expect(result.success).toBe(false);
     });
 
     it("enforces the 100-character max to prevent excessively long inputs", () => {
@@ -157,9 +126,6 @@ describe("security: input sanitization", () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // Unicode & encoding attacks
-  // -------------------------------------------------------------------------
   describe("unicode attack prevention", () => {
     it("rejects null bytes", () => {
       const result = citySearchSchema.safeParse({ city: "London\0" });

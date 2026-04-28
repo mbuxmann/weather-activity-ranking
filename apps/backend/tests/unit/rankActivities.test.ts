@@ -21,10 +21,10 @@ describe("rankActivities", () => {
     expect(ranking?.rankings).toHaveLength(4);
     expect(ranking?.rankings.map((score) => score.activity)).toEqual([
       "OUTDOOR_SIGHTSEEING",
-      "SURFING",
       "INDOOR_SIGHTSEEING",
-      "SKIING"
+      "SKIING",
+      "SURFING"
     ]);
-    expect(ranking?.rankings.map((score) => score.score)).toEqual([90, 55, 35, 20]);
+    expect(ranking?.rankings.map((score) => score.score)).toEqual([90, 35, 20, 0]);
   });
 });

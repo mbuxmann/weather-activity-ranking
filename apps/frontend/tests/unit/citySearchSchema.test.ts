@@ -2,9 +2,6 @@ import { describe, expect, it } from "vitest";
 import { citySearchSchema } from "../../src/schemas/citySearch";
 
 describe("citySearchSchema", () => {
-  // ---------------------------------------------------------------------------
-  // Positive tests — valid inputs that SHOULD pass
-  // ---------------------------------------------------------------------------
   describe("positive (valid inputs)", () => {
     it("accepts a simple city name", () => {
       const result = citySearchSchema.safeParse({ city: "London" });
@@ -58,9 +55,6 @@ describe("citySearchSchema", () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Negative tests — invalid inputs that SHOULD fail
-  // ---------------------------------------------------------------------------
   describe("negative (invalid inputs)", () => {
     it("rejects an empty string", () => {
       const result = citySearchSchema.safeParse({ city: "" });
@@ -134,9 +128,6 @@ describe("citySearchSchema", () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Boundary / edge-case tests
-  // ---------------------------------------------------------------------------
   describe("boundary and edge cases", () => {
     it("accepts exactly 2 characters (lower boundary)", () => {
       expect(citySearchSchema.safeParse({ city: "AB" }).success).toBe(true);
@@ -151,13 +142,11 @@ describe("citySearchSchema", () => {
     });
 
     it("preserves leading and trailing whitespace in the value (trimming is a consumer concern)", () => {
-      // The schema validates the raw input; trimming happens in the form submit handler
       const result = citySearchSchema.safeParse({ city: "  Cape Town  " });
       expect(result.success).toBe(true);
     });
 
     it("collects all validation errors when multiple rules fail", () => {
-      // An empty string fails both min(1) checks
       const result = citySearchSchema.safeParse({ city: "" });
       expect(result.success).toBe(false);
       if (!result.success) {

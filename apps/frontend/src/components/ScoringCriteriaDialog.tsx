@@ -12,20 +12,9 @@ import {
 import { ActivityGlyph } from "./ActivityGlyph";
 
 type ScoringCriteriaDialogProps = {
-  /** The trigger element — passed via `asChild` so the host owns its styling. */
   children: ReactNode;
 };
 
-/**
- * Modal that explains how each activity is scored. Mirrors the
- * backend's `scoreSkiing / scoreSurfing / scoreOutdoorSightseeing /
- * scoreIndoorSightseeing` heuristics so users can understand *why*
- * a day rates the way it does.
- *
- * Built on shadcn's Dialog primitives (which wrap Radix Dialog) — gives
- * us focus management, scrim, escape-to-close, and scroll-lock for free.
- * Styled with our Soft Structuralism vocabulary (cream tray + white core).
- */
 export function ScoringCriteriaDialog({ children }: ScoringCriteriaDialogProps) {
   return (
     <Dialog>
@@ -35,7 +24,6 @@ export function ScoringCriteriaDialog({ children }: ScoringCriteriaDialogProps) 
         className="shell-tray w-[min(560px,calc(100vw-32px))] max-w-none gap-0 rounded-[1.75rem] bg-transparent p-1.5 sm:max-w-none [&>button[data-slot=dialog-close]]:right-3 [&>button[data-slot=dialog-close]]:top-3 [&>button[data-slot=dialog-close]]:z-10"
       >
         <div className="shell-core relative flex max-h-[calc(100dvh-60px)] flex-col overflow-hidden rounded-[calc(1.75rem-0.375rem)]">
-          {/* Header */}
           <DialogHeader className="gap-2 border-b border-border/60 px-7 pb-5 pt-7 text-left">
             <Badge
               variant="default"
@@ -48,14 +36,13 @@ export function ScoringCriteriaDialog({ children }: ScoringCriteriaDialogProps) 
               How we score the week.
             </DialogTitle>
             <DialogDescription className="max-w-[44ch] text-[13.5px] leading-relaxed text-foreground/65">
-              Every activity gets a 0&ndash;10 rating per day. Each rating
+              Every activity gets a 0&ndash;100 score per day. Each score
               blends the weather signals that matter most for that
               activity &mdash; so an ideal ski day looks nothing like an
               ideal beach day.
             </DialogDescription>
           </DialogHeader>
 
-          {/* Scrollable body */}
           <div className="flex-1 overflow-y-auto px-7 py-6">
             <ul className="flex flex-col gap-5">
               {CRITERIA.map((entry) => (
@@ -64,7 +51,6 @@ export function ScoringCriteriaDialog({ children }: ScoringCriteriaDialogProps) 
             </ul>
           </div>
 
-          {/* Footer */}
           <footer className="flex items-center justify-between gap-3 border-t border-border/60 bg-foreground/[0.015] px-7 py-4 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-primary/70" aria-hidden="true" />
@@ -80,12 +66,7 @@ export function ScoringCriteriaDialog({ children }: ScoringCriteriaDialogProps) 
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Criteria content — mirrors apps/backend/src/domain/ranking/scoring.ts     */
-/* -------------------------------------------------------------------------- */
-
 type Factor = {
-  /** "+" boosts the score, "-" penalises it. */
   direction: "+" | "-";
   label: string;
 };
@@ -108,11 +89,14 @@ const CRITERIA: CriteriaEntry[] = [
   },
   {
     activity: Activity.SURFING,
-    blurb: "Warm, breezy days without storms rolling in.",
+    blurb: "Coastal days with rideable swell, useful period, and mild air.",
     factors: [
-      { direction: "+", label: "Warm air (≥ 15 °C)" },
-      { direction: "+", label: "Steady wind (12–30 kph)" },
-      { direction: "-", label: "Heavy rain / storm risk" },
+      { direction: "+", label: "Best wave height: 1–2.5 m" },
+      { direction: "+", label: "Marginal wave height: 0.5–1 m or 2.5–4 m" },
+      { direction: "+", label: "Longer wave period: ≥ 8 s" },
+      { direction: "+", label: "Warmer air: ≥ 15 °C, best at ≥ 20 °C" },
+      { direction: "-", label: "Heavy rain: > 15 mm" },
+      { direction: "-", label: "No marine forecast: unavailable inland" },
     ],
   },
   {
@@ -134,10 +118,6 @@ const CRITERIA: CriteriaEntry[] = [
   },
 ];
 
-/* -------------------------------------------------------------------------- */
-/*  Sub-components                                                            */
-/* -------------------------------------------------------------------------- */
-
 function CriteriaRow({ entry }: { entry: CriteriaEntry }) {
   return (
     <li className="flex flex-col gap-3 rounded-2xl bg-foreground/[0.025] p-4 ring-1 ring-foreground/[0.05]">
@@ -154,9 +134,9 @@ function CriteriaRow({ entry }: { entry: CriteriaEntry }) {
       </header>
 
       <ul className="flex flex-col gap-1.5">
-        {entry.factors.map((factor, idx) => (
+        {entry.factors.map((factor) => (
           <li
-            key={`${entry.activity}-${idx}`}
+            key={`${entry.activity}-${factor.label}`}
             className="flex items-center gap-2.5 text-[12.5px] text-foreground/75"
           >
             <FactorBadge direction={factor.direction} />

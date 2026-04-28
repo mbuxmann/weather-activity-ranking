@@ -20,16 +20,30 @@ export const scoreSkiing = (day: WeatherDay): ActivityScore => {
 };
 
 export const scoreSurfing = (day: WeatherDay): ActivityScore => {
-  // NOTE: surfing scoring is intentionally untouched in this task.
-  // It will be rewritten in Task 6 to use marine forecast data.
-  const warmthBonus = day.temperatureMaxC >= 20 ? 25 : day.temperatureMaxC >= 15 ? 12 : 0;
-  const windBonus = day.windSpeedKph >= 12 && day.windSpeedKph <= 30 ? 25 : 5;
-  const stormPenalty = day.precipitationMm > 15 ? 25 : 0;
+  if (!day.marine) {
+    return {
+      activity: "SURFING",
+      score: 0,
+      reason: "No coastal forecast available for this location."
+    };
+  }
+
+  const waveBonus = tier(day.marine.waveHeightMaxM, [
+    { when: (h) => h >= 1 && h <= 2.5, points: 40 },
+    { when: (h) => h >= 0.5 && h < 1, points: 20 },
+    { when: (h) => h > 2.5 && h <= 4, points: 15 }
+  ]);
+  const periodBonus = day.marine.wavePeriodMaxS >= 8 ? 25 : 10;
+  const warmthBonus = tier(day.temperatureMaxC, [
+    { when: (t) => t >= 20, points: 15 },
+    { when: (t) => t >= 15, points: 8 }
+  ]);
+  const stormPenalty = day.precipitationMm > 15 ? 20 : 0;
 
   return {
     activity: "SURFING",
-    score: clampScore(25 + warmthBonus + windBonus - stormPenalty),
-    reason: "Initial heuristic uses warm weather, usable wind, and low storm risk."
+    score: clampScore(20 + waveBonus + periodBonus + warmthBonus - stormPenalty),
+    reason: "Scores higher with rideable wave height, longer period, and mild conditions."
   };
 };
 

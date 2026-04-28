@@ -36,6 +36,9 @@ COPY --from=builder /app/apps/frontend/package.json apps/frontend/
 COPY --from=builder /app/apps/backend/dist apps/backend/dist
 COPY --from=builder /app/packages/contracts/package.json packages/contracts/
 COPY --from=builder /app/packages/contracts/dist packages/contracts/dist
+# Backend reads schema.graphql at runtime via contracts/node's schemaPath,
+# which resolves relative to dist/. Must be copied alongside dist/.
+COPY --from=builder /app/packages/contracts/schema.graphql packages/contracts/
 
 # Production-only install (skips devDependencies, keeps workspace symlinks)
 RUN bun install --frozen-lockfile --production \

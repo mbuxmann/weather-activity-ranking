@@ -37,7 +37,8 @@ describe("scoreSkiing", () => {
     const enormous = scoreSkiing(baseDay({ snowfallCm: 100 }));
 
     expect(lots.score).toBeGreaterThan(noSnow.score);
-    expect(enormous.score).toBe(lots.score < 100 ? lots.score : 100);
+    // Once the snowfall bonus saturates, adding more snow shouldn't move the score.
+    expect(enormous.score).toBe(lots.score);
   });
 
   it("penalises high wind (> 35 kph)", () => {

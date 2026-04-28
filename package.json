@@ -7,11 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun run generate && turbo build",
-    "dev": "bun run generate && turbo dev",
-    "generate": "bun run generate:schema && bun run generate:gql",
+    "build": "bun run generate:gql && turbo build",
+    "dev": "bun run generate:gql && turbo dev",
+    "generate": "bun run generate:gql",
     "generate:gql": "bun run --filter frontend generate",
-    "generate:schema": "bun run --filter backend generate:schema",
     "test": "turbo test",
     "typecheck": "turbo typecheck"
   },

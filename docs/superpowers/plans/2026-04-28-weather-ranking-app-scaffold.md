@@ -6,7 +6,7 @@
 
 **Architecture:** The root workspace coordinates builds through Turborepo. Backend logic is separated into GraphQL, service, client, and pure domain modules. Frontend code owns rendering and GraphQL query execution only.
 
-**Tech Stack:** Bun, Turborepo, TypeScript, Hono, GraphQL Yoga, Pothos, React, Vite, urql, GraphQL Code Generator, Vitest, Zod, Pino, p-retry.
+**Tech Stack:** Bun, Turborepo, TypeScript, Hono, GraphQL Yoga, React, Vite, urql, GraphQL Code Generator, Vitest, Zod, Pino, p-retry.
 
 ---
 
@@ -36,7 +36,7 @@ Expected: Bun installs all workspace dependencies.
 
 - [x] **Step 1: Add the GraphQL schema contract**
 
-Generate `activityRankings(city: String!)` and related ranking types from the backend Pothos schema.
+Define `activityRankings(city: String!)` and related ranking types in schema-first SDL.
 
 - [x] **Step 2: Build the package**
 

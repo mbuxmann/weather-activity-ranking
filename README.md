@@ -5,9 +5,9 @@ Small TypeScript take-home project that ranks how desirable a city will be for s
 ## Stack
 
 - Monorepo: Bun workspaces + Turborepo
-- Backend: Hono + GraphQL Yoga + Pothos
+- Backend: Hono + GraphQL Yoga
 - Frontend: React + Vite + urql
-- GraphQL types: generated SDL contract + GraphQL Code Generator client preset
+- GraphQL types: schema-first SDL contract + GraphQL Code Generator client preset
 - Testing: Vitest
 - Validation: Zod
 - Logging: Pino
@@ -20,7 +20,7 @@ Small TypeScript take-home project that ranks how desirable a city will be for s
 apps/
   backend/
     src/
-      graphql/      # Pothos schema and generated SDL printer
+      graphql/      # Yoga schema binding and thin resolvers
       services/     # Use-case orchestration
       domain/       # Pure ranking and weather domain types
       clients/      # Open-Meteo HTTP client
@@ -31,12 +31,12 @@ apps/
       components/   # React presentation components
       gql/          # Generated frontend GraphQL operation types
 packages/
-  contracts/        # Generated GraphQL schema contract
+  contracts/        # Shared schema.graphql contract
 ```
 
-The backend keeps GraphQL, services, external clients, and ranking logic separate. Pothos is the source of truth for the GraphQL schema, and `bun run generate` prints `packages/contracts/schema.graphql` from that code-first schema. The ranking module is pure TypeScript and can be tested without HTTP, GraphQL, or Open-Meteo.
+The backend keeps GraphQL, services, external clients, and ranking logic separate. `packages/contracts/schema.graphql` is the source of truth for the API contract. The ranking module is pure TypeScript and can be tested without HTTP, GraphQL, or Open-Meteo.
 
-The frontend talks to the backend through GraphQL only. It does not import backend resolver or service types. Frontend operation types are generated from the printed schema contract and `.graphql` operation documents.
+The frontend talks to the backend through GraphQL only. It does not import backend resolver or service types. Frontend operation types are generated from the shared schema contract and `.graphql` operation documents.
 
 ## Run Locally
 
@@ -91,7 +91,9 @@ Vite is used instead of TanStack Start or Next.js because the take-home brief re
 
 urql is used instead of Apollo because the frontend only needs straightforward GraphQL query execution.
 
-Pothos is used instead of hand-written SDL because the backend schema can stay code-first and type-checked while still generating a standard GraphQL schema contract for frontend tooling.
+Schema-first SDL is used instead of a code-first schema builder because the API is small and the readable contract matters more than extra abstraction.
+
+GraphQL Code Generator is still used on the frontend so urql receives typed query documents without coupling the UI to backend internals.
 
 The current ranking model is intentionally simple. It creates a working seam for tests and UI while leaving room to refine activity-specific heuristics, especially surfing with marine forecast data and skiing with better snow/elevation context.
 

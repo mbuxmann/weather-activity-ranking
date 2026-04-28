@@ -4,7 +4,11 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "schema.graphql"]
+    },
+    "generate": {
+      "cache": false,
+      "outputs": ["apps/frontend/src/gql/**", "packages/contracts/schema.graphql"]
     },
     "dev": {
       "cache": false,

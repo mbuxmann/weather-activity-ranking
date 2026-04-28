@@ -1,17 +1,19 @@
-type Query {
-  activityRankings(city: String!): ActivityRankingResult!
+enum Activity {
+  INDOOR_SIGHTSEEING
+  OUTDOOR_SIGHTSEEING
+  SKIING
+  SURFING
 }
 
 type ActivityRankingResult {
-  location: Location!
   days: [DailyActivityRanking!]!
+  location: Location!
 }
 
-type Location {
-  name: String!
-  country: String!
-  latitude: Float!
-  longitude: Float!
+type ActivityScore {
+  activity: Activity!
+  reason: String!
+  score: Int!
 }
 
 type DailyActivityRanking {
@@ -19,15 +21,13 @@ type DailyActivityRanking {
   rankings: [ActivityScore!]!
 }
 
-type ActivityScore {
-  activity: Activity!
-  score: Int!
-  reason: String!
+type Location {
+  country: String!
+  latitude: Float!
+  longitude: Float!
+  name: String!
 }
 
-enum Activity {
-  SKIING
-  SURFING
-  OUTDOOR_SIGHTSEEING
-  INDOOR_SIGHTSEEING
+type Query {
+  activityRankings(city: String!): ActivityRankingResult!
 }

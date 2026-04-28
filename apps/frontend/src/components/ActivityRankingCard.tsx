@@ -1,4 +1,6 @@
-import type { ActivityScore } from "../api/queries";
+import type { ActivityRankingsQuery } from "../gql/graphql";
+
+type ActivityScore = ActivityRankingsQuery["activityRankings"]["days"][number]["rankings"][number];
 
 const activityLabels: Record<ActivityScore["activity"], string> = {
   SKIING: "Skiing",

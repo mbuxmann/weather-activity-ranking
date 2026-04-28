@@ -1,8 +1,8 @@
-import type { ActivityRankingsData } from "../api/queries";
+import type { ActivityRankingsQuery } from "../gql/graphql";
 import { ActivityRankingCard } from "./ActivityRankingCard";
 
 type RankingResultsProps = {
-  result: ActivityRankingsData["activityRankings"];
+  result: ActivityRankingsQuery["activityRankings"];
 };
 
 export function RankingResults({ result }: RankingResultsProps) {

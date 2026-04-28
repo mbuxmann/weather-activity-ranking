@@ -8,9 +8,9 @@ Build a small TypeScript web application for a senior engineering take-home. The
 
 Use a Turborepo monorepo with Bun workspaces. The backend lives in `apps/backend`, the frontend lives in `apps/frontend`, and shared GraphQL contract assets live in `packages/contracts`.
 
-The backend uses Hono as the HTTP application and GraphQL Yoga at `/graphql`. Resolvers stay thin and delegate to `ranking.service.ts`. The service orchestrates city lookup, weather lookup, and pure ranking logic. Ranking code lives in `domain/ranking` and does not depend on Hono, GraphQL, or Open-Meteo response shapes.
+The backend uses Hono as the HTTP application, GraphQL Yoga at `/graphql`, and Pothos for the code-first schema. GraphQL fields stay thin and delegate to `ranking.service.ts`. The service orchestrates city lookup, weather lookup, and pure ranking logic. Ranking code lives in `domain/ranking` and does not depend on Hono, GraphQL, or Open-Meteo response shapes.
 
-The frontend uses Vite, React, and urql. It owns UI state and GraphQL queries only. It does not import backend service or resolver types.
+The frontend uses Vite, React, and urql. It owns UI state and GraphQL queries only. It does not import backend service or resolver types. Frontend operation types are generated from the SDL contract printed from the Pothos schema.
 
 ## Data Flow
 
@@ -21,6 +21,7 @@ The frontend uses Vite, React, and urql. It owns UI state and GraphQL queries on
 5. The service maps external weather data into internal weather-day types.
 6. Pure ranking functions return daily activity scores.
 7. GraphQL maps the result into the public API shape.
+8. `bun run generate` prints the SDL contract and regenerates frontend query types when the API changes.
 
 ## Testing
 
@@ -33,4 +34,4 @@ Prioritize backend domain and service tests because they show the strongest engi
 
 ## Trade-Offs
 
-Vite is chosen over TanStack Start and Next.js because the assignment rewards clean frontend/backend separation more than full-stack framework features. Hono is chosen for a small explicit backend surface. urql is chosen over Apollo because the frontend only needs simple GraphQL queries. The initial scoring implementation is intentionally simple and will be refined after the scaffold is running.
+Vite is chosen over TanStack Start and Next.js because the assignment rewards clean frontend/backend separation more than full-stack framework features. Hono is chosen for a small explicit backend surface. Pothos is chosen over hand-written SDL because it keeps schema definitions type-checked while still producing a standard GraphQL contract. urql is chosen over Apollo because the frontend only needs simple GraphQL queries. The initial scoring implementation is intentionally simple and will be refined after the scaffold is running.

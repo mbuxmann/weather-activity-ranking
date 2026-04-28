@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "urql";
-import { ActivityRankingsQuery, type ActivityRankingsData } from "./api/queries";
 import { CitySearch } from "./components/CitySearch";
 import { RankingResults } from "./components/RankingResults";
-
-type ActivityRankingsVariables = {
-  city: string;
-};
+import {
+  ActivityRankingsDocument,
+  type ActivityRankingsQuery,
+  type ActivityRankingsQueryVariables
+} from "./gql/graphql";
 
 export function App() {
   const [city, setCity] = useState("Cape Town");
-  const [{ data, error, fetching }] = useQuery<ActivityRankingsData, ActivityRankingsVariables>({
-    query: ActivityRankingsQuery,
+  const [{ data, error, fetching }] = useQuery<ActivityRankingsQuery, ActivityRankingsQueryVariables>({
+    query: ActivityRankingsDocument,
     variables: { city },
     pause: !city
   });

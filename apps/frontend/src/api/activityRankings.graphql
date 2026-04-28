@@ -1,0 +1,18 @@
+query ActivityRankings($city: String!) {
+  activityRankings(city: $city) {
+    location {
+      name
+      country
+      latitude
+      longitude
+    }
+    days {
+      date
+      rankings {
+        activity
+        score
+        reason
+      }
+    }
+  }
+}

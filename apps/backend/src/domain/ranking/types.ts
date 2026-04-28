@@ -1,11 +1,6 @@
-export const activities = [
-  "SKIING",
-  "SURFING",
-  "OUTDOOR_SIGHTSEEING",
-  "INDOOR_SIGHTSEEING"
-] as const;
+import type { Activity } from "contracts";
 
-export type Activity = (typeof activities)[number];
+export type { Activity } from "contracts";
 
 export type ActivityScore = {
   activity: Activity;

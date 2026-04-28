@@ -1,0 +1,52 @@
+# Coolify-friendly compose. Set environment values in the Coolify UI
+# (or in a local .env file when running `docker compose up`).
+#
+# Required env when deploying:
+#   PUBLIC_API_URL  - public URL the browser uses to reach the backend
+#                     (e.g. https://api.example.com/graphql)
+#   PUBLIC_WEB_URL  - public URL of the frontend, used for backend CORS
+#                     (e.g. https://app.example.com)
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      # Comma-separated list of allowed origins. Defaults to localhost in dev.
+      CORS_ORIGINS: ${PUBLIC_WEB_URL:-http://localhost:8080}
+    expose:
+      - "4000"
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        # Vite bakes this into the bundle at build time.
+        VITE_GRAPHQL_URL: ${PUBLIC_API_URL:-http://localhost:4000/graphql}
+    expose:
+      - "80"
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

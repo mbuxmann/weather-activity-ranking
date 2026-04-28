@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build output (we rebuild inside the image)
+dist
+**/dist
+.turbo
+**/.turbo
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Local env / secrets
+.env
+.env.local
+.env.*.local
+*.log
+
+# Test output
+coverage
+**/coverage
+test-results
+**/test-results
+playwright-report
+**/playwright-report
+
+# Editor / OS noise
+.DS_Store
+.idea
+.vscode
+
+# Project planning + docs not needed in image
+.planning
+.claude
+docs
+*.pdf

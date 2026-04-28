@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { createSchema } from "graphql-yoga";
-import { schemaPath } from "contracts";
+import { schemaPath } from "contracts/node";
 import { createResolvers } from "./resolvers.js";
 import type { RankingService } from "../services/ranking.service.js";
 

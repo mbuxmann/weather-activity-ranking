@@ -10,7 +10,7 @@
     "build": "bun run generate:gql && turbo build",
     "dev": "bun run generate:gql && turbo dev --filter=backend --filter=frontend",
     "generate": "bun run generate:gql",
-    "generate:gql": "bun run --filter frontend generate",
+    "generate:gql": "bun run --filter contracts generate && bun run --filter frontend generate",
     "test": "turbo test",
     "typecheck": "turbo typecheck"
   },

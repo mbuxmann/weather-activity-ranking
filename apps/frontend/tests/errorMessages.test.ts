@@ -1,17 +1,14 @@
+import { ErrorCode } from "contracts";
 import { describe, expect, it } from "vitest";
 import { getActivityRankingErrorMessage } from "../src/api/errorMessages";
 
 describe("getActivityRankingErrorMessage", () => {
-  it("maps known GraphQL error codes to friendly messages", () => {
+  // ---------------------------------------------------------------------------
+  // Positive — every ErrorCode from the contracts package maps to a message
+  // ---------------------------------------------------------------------------
+  it("maps LOCATION_NOT_FOUND to a user-friendly message", () => {
     const error = {
-      graphQLErrors: [
-        {
-          extensions: {
-            code: "LOCATION_NOT_FOUND"
-          }
-        }
-      ],
-      networkError: undefined
+      graphQLErrors: [{ extensions: { code: ErrorCode.LOCATION_NOT_FOUND } }],
     };
 
     expect(getActivityRankingErrorMessage(error)).toBe(
@@ -19,16 +16,21 @@ describe("getActivityRankingErrorMessage", () => {
     );
   });
 
-  it("maps provider outages to a retryable message", () => {
+  it("maps INVALID_CITY to a user-friendly message", () => {
+    const error = {
+      graphQLErrors: [{ extensions: { code: ErrorCode.INVALID_CITY } }],
+    };
+
+    expect(getActivityRankingErrorMessage(error)).toBe(
+      "Enter a city or town to see activity rankings."
+    );
+  });
+
+  it("maps WEATHER_PROVIDER_UNAVAILABLE to a retryable message", () => {
     const error = {
       graphQLErrors: [
-        {
-          extensions: {
-            code: "WEATHER_PROVIDER_UNAVAILABLE"
-          }
-        }
+        { extensions: { code: ErrorCode.WEATHER_PROVIDER_UNAVAILABLE } },
       ],
-      networkError: undefined
     };
 
     expect(getActivityRankingErrorMessage(error)).toBe(
@@ -36,16 +38,35 @@ describe("getActivityRankingErrorMessage", () => {
     );
   });
 
-  it("maps network failures before generic GraphQL failures", () => {
+  it("maps WEATHER_PROVIDER_BAD_RESPONSE to a retryable message", () => {
     const error = {
       graphQLErrors: [
-        {
-          extensions: {
-            code: "INTERNAL_ERROR"
-          }
-        }
+        { extensions: { code: ErrorCode.WEATHER_PROVIDER_BAD_RESPONSE } },
       ],
-      networkError: new Error("Failed to fetch")
+    };
+
+    expect(getActivityRankingErrorMessage(error)).toBe(
+      "Weather data came back in an unexpected format. Try again in a moment."
+    );
+  });
+
+  it("maps INTERNAL_ERROR to a generic message", () => {
+    const error = {
+      graphQLErrors: [{ extensions: { code: ErrorCode.INTERNAL_ERROR } }],
+    };
+
+    expect(getActivityRankingErrorMessage(error)).toBe(
+      "Something went wrong while ranking activities. Try again in a moment."
+    );
+  });
+
+  // ---------------------------------------------------------------------------
+  // Priority — network errors take precedence
+  // ---------------------------------------------------------------------------
+  it("prioritises network errors over GraphQL error codes", () => {
+    const error = {
+      graphQLErrors: [{ extensions: { code: ErrorCode.INTERNAL_ERROR } }],
+      networkError: new Error("Failed to fetch"),
     };
 
     expect(getActivityRankingErrorMessage(error)).toBe(
@@ -53,12 +74,37 @@ describe("getActivityRankingErrorMessage", () => {
     );
   });
 
-  it("falls back to a safe generic message", () => {
+  // ---------------------------------------------------------------------------
+  // Negative — unknown or missing error codes fall back safely
+  // ---------------------------------------------------------------------------
+  it("falls back to INTERNAL_ERROR for an unrecognised code", () => {
+    const error = {
+      graphQLErrors: [{ extensions: { code: "TOTALLY_UNKNOWN" } }],
+    };
+
+    expect(getActivityRankingErrorMessage(error)).toBe(
+      "Something went wrong while ranking activities. Try again in a moment."
+    );
+  });
+
+  it("falls back to INTERNAL_ERROR when graphQLErrors is empty", () => {
     expect(
       getActivityRankingErrorMessage({
         graphQLErrors: [],
-        networkError: undefined
+        networkError: undefined,
       })
-    ).toBe("Something went wrong while ranking activities. Try again in a moment.");
+    ).toBe(
+      "Something went wrong while ranking activities. Try again in a moment."
+    );
+  });
+
+  it("falls back to INTERNAL_ERROR when no extensions present", () => {
+    const error = {
+      graphQLErrors: [{ extensions: {} }],
+    };
+
+    expect(getActivityRankingErrorMessage(error)).toBe(
+      "Something went wrong while ranking activities. Try again in a moment."
+    );
   });
 });

@@ -7,14 +7,28 @@ type CreateAppOptions = {
   rankingService?: RankingService;
 };
 
+const DEFAULT_CORS_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"];
+
+const parseCorsOrigins = (raw: string | undefined): string[] => {
+  if (!raw) {
+    return DEFAULT_CORS_ORIGINS;
+  }
+  const parsed = raw
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+  return parsed.length > 0 ? parsed : DEFAULT_CORS_ORIGINS;
+};
+
 export const createApp = ({ rankingService = createRankingService() }: CreateAppOptions = {}) => {
   const app = new Hono();
   const yoga = createYogaHandler(rankingService);
+  const corsOrigins = parseCorsOrigins(process.env.CORS_ORIGINS);
 
   app.use(
     "/graphql",
     cors({
-      origin: ["http://localhost:5173", "http://127.0.0.1:5173"]
+      origin: corsOrigins
     })
   );
 

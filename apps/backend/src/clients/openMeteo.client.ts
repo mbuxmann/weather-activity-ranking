@@ -1,3 +1,4 @@
+import { FORECAST_DAYS } from "contracts";
 import pRetry, { AbortError } from "p-retry";
 import { z, ZodError } from "zod";
 import {
@@ -119,7 +120,7 @@ export const createOpenMeteoClient = (): OpenMeteoClient => ({
         "wind_speed_10m_max"
       ].join(",")
     );
-    url.searchParams.set("forecast_days", "7");
+    url.searchParams.set("forecast_days", String(FORECAST_DAYS));
     url.searchParams.set("timezone", "auto");
 
     const payload = parseProviderPayload(forecastSchema, await fetchJson(url));

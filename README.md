@@ -190,11 +190,17 @@ Apollo Client would be the stronger choice if the frontend grew into a larger Gr
 
 The UI is componentized around the user workflow: search, status, summary, per-day cards, and scoring explanation. Client-side Zod validation gives immediate feedback, while backend validation still owns the trusted boundary.
 
+shadcn/ui and Tailwind CSS were chosen because they provide strong primitives without locking the UI into a heavy design system. shadcn/ui gives accessible component foundations that can be copied, inspected, and modified locally; Tailwind keeps styling close to the component and makes iteration fast.
+
+This also works well with AI-assisted development. AI is more effective when the codebase has clear conventions and reusable primitives: use the existing `Button`, `Badge`, `Dialog`, `Alert`, and form patterns instead of inventing new component structures every time. The result is faster UI work with less drift.
+
 I kept the UI as a focused single-screen experience rather than adding routing, saved searches, maps, or account features. That keeps the user path aligned with the brief: enter a city, understand the ranking, and see the reasoning behind the scores.
 
 ### Validation And Error UX
 
 The frontend validates city input with Zod to give immediate feedback for empty, too-short, too-long, or clearly invalid input. The backend still trims and validates the city again because client validation is a convenience, not a trust boundary.
+
+React Hook Form is used with Zod because it keeps form state lightweight while giving one validation schema for runtime checks and inferred TypeScript types. This reduces frontend drift and makes it clearer for both humans and AI agents what valid input looks like.
 
 The backend returns stable error codes from the shared contracts package. The frontend maps those codes to friendly messages instead of displaying raw GraphQL or provider errors. This keeps user feedback understandable while preserving room for observability on the server side.
 
@@ -265,22 +271,39 @@ bun run build
 
 ## AI Usage
 
-AI assistance was used to:
+AI was used throughout the project, but mainly as a thinking, scaffolding, and review partner rather than as an unchecked source of truth.
 
-- Extract and summarize the PDF brief into implementation requirements
-- Compare stack and architecture trade-offs
-- Draft initial scaffolding and test cases
-- Review the code against the brief for missing edge cases
-- Tighten README communication and explicit omissions
+ChatGPT was used early to unpack the PDF brief, sanity-check the interpretation of the instructions, and discuss architectural trade-offs. This included conversations around Hono vs NestJS, Vite React vs Next.js, urql vs Apollo Client, schema-first GraphQL, caching options, and what level of implementation would be appropriate for a 2-3 hour senior-engineer exercise.
 
-The generated suggestions were treated as drafts. The final implementation keeps critical behavior in small modules with tests so AI-assisted code can be inspected, corrected, and replaced safely.
+Superpowers was used as a structured workflow layer for planning and implementation. It helped break the work into phases, scaffold the project shape, generate focused implementation plans, and keep the work aligned with the brief instead of drifting into unrelated product features.
+
+Claude Code planning mode was used for parts of the implementation planning and review process, especially when deciding how to sequence changes, where to add tests, and how to audit the code against the requirements before tightening the README.
+
+Parallel agents were used for some bounded review and implementation tasks, such as checking separate parts of the codebase, looking for missing trade-offs, and validating that the frontend/backend/contracts boundaries were still coherent.
+
+A frontend design skill was used to improve the UI direction and interaction polish. That helped move the interface beyond a plain scaffold while keeping the product scope small: search, status, rankings, and scoring explanation stayed the core experience.
+
+AI-generated output was treated as draft material. I kept the important behavior in small modules, added tests around scoring/provider/error behavior, and reviewed generated suggestions against the actual code and the PDF brief before accepting them.
+
+Several package choices were made to make AI-assisted development safer and faster: schema-first GraphQL plus codegen for end-to-end types, shared contracts for stable enums/error codes, Zod for runtime validation, React Hook Form for predictable form state, and shadcn/ui/Tailwind for consistent UI primitives. Those constraints gave AI tools clearer boundaries and made generated changes easier to review.
+
+One lesson from the process is that AI is most useful when the foundation is already strong. Clear module boundaries, generated types, small pure functions, reusable UI primitives, and focused tests give AI concrete reference points. That makes it more likely to extend the existing code style and contracts instead of inventing parallel patterns.
 
 ## Omissions And Trade-Offs
 
-- Skiing does not use resort locations, elevation, snowpack, lift status, or ski-area availability. A production version would combine weather with resort metadata and snow-depth APIs.
-- Surfing uses Open-Meteo marine forecast availability as the coastal signal. A production version would use surf spot metadata, bathymetry, tide, wind direction, and local break suitability.
-- City disambiguation is minimal: Open-Meteo's first geocoding result is used. A production UI would show candidate locations for ambiguous searches.
-- The in-memory cache is process-local and has no size cap. Multi-instance production deployment should use a shared bounded cache such as Redis.
-- Scores are intentionally explainable heuristics, not personalized recommendations. Production scoring would need calibration with domain data and user feedback.
-- Full browser E2E coverage is omitted so the default test path stays fast and reliable for the take-home. Playwright coverage would be the next step for deployment confidence.
-- The UI is polished enough to demonstrate the workflow, but advanced product features such as saved locations, history, maps, localization, and accessibility audits are intentionally out of scope.
+These were deliberate scope choices for a 2-3 hour take-home. I prioritized a clean architecture, typed contracts, provider resilience, and testable ranking logic over building every production feature.
+
+| Area | What was omitted or simplified | Why it was skipped | How I would fix it |
+| --- | --- | --- | --- |
+| Skiing domain depth | No resort availability, elevation, snowpack, lift status, or ski-area matching. | Open-Meteo daily snowfall is enough to demonstrate the scoring boundary, but not enough for a production ski recommendation engine. Adding resort data would have consumed the time budget and shifted focus away from architecture. | Add resort/location metadata, elevation-aware matching, snow-depth data, lift status, and a ski-area availability layer before scoring. |
+| Surfing domain depth | No surf spot metadata, tide, wind direction, bathymetry, or local break suitability. | Marine forecast data adds a meaningful coastal signal while keeping the integration small. Full surf quality is highly local and would require a separate surf-domain model. | Add surf spot data, tide and wind-direction inputs, break-type metadata, and spot-specific scoring curves. |
+| City disambiguation | The first Open-Meteo geocoding result is used. | This keeps the search flow fast and simple for the exercise. A full disambiguation UI would add extra state, screens, and API shape decisions. | Return multiple candidate locations from the backend and let the user choose the intended city before fetching rankings. |
+| Cache layer | Process-local in-memory TTL cache instead of Redis or another shared cache. | Caching is an optimization here, not source-of-truth state. Redis would add infrastructure, deployment configuration, and failure modes that are disproportionate for the local take-home setup. | Keep the cache interface and swap in Redis with bounded keys, explicit TTL policies, shared instance state, and local in-memory fallback for tests/dev. |
+| Scoring model | Explainable heuristics instead of a calibrated recommendation model. | Simple weighted heuristics are transparent, easy to test, and appropriate for showing architecture. A calibrated model would require data collection, domain expertise, and validation beyond the brief. | Collect historical weather/activity-quality data, validate against user feedback or domain labels, and tune activity-specific scoring curves. |
+| E2E coverage | Focused unit/integration tests instead of full Playwright browser coverage. | Most risk sits in provider mapping, scoring, GraphQL errors, and UI state. Full browser E2E would add setup/runtime cost for less incremental confidence in the time box. | Add Playwright coverage for search success, validation errors, provider failures, and responsive rendering in CI. |
+| UI/product polish | No saved locations, search history, maps, localization, accounts, or personalization. | The brief asks for a minimal web app with strong technical foundations. These product features would widen scope without improving the core architecture signal. | Add persisted user preferences, saved searches, map/location selection, localization, and personalized scoring once the core workflow is stable. |
+| Accessibility polish | Accessible primitives and labels are used, but no full accessibility audit was completed. | shadcn/ui/Radix primitives provide a good baseline, but a proper audit takes dedicated time across keyboard, screen reader, contrast, and responsive states. | Run axe/Playwright accessibility checks, manual keyboard and screen-reader passes, and fix any contrast/focus/announcement gaps. |
+| Observability | Structured logs exist, but there are no metrics, traces, dashboards, or alerting. | Logs are enough to demonstrate operational intent in a small service. Production observability would add vendor/tooling decisions outside the core exercise. | Add request metrics, provider latency/error counters, tracing, dashboarding, and alerts for provider failures and high error rates. |
+| Deployment hardening | Docker and compose are included, but no CI/CD pipeline, secrets workflow, rate limiting, or production monitoring. | The deployment path is credible without turning the take-home into infrastructure work. CI/CD and platform controls depend on the target hosting environment. | Add CI for typecheck/test/build, secret management, rate limiting, production env validation, deployment previews, and health/monitoring checks. |
+
+The current architecture keeps these improvements additive: most of them can be introduced behind the existing client, service, contract, and UI boundaries without rewriting the app.

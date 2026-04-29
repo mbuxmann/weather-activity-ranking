@@ -16,11 +16,5 @@ export default defineConfig({
     exclude: ["node_modules/**"],
     passWithNoTests: true,
     css: true,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html"],
-      include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/api/generated.ts", "src/main.tsx"],
-    },
   },
 });

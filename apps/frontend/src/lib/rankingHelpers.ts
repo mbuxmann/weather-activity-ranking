@@ -35,12 +35,6 @@ export function formatShortWeekday(date: string): string {
   );
 }
 
-export function formatDayInitial(date: string): string {
-  return new Intl.DateTimeFormat("en", { weekday: "narrow" }).format(
-    new Date(`${date}T00:00:00`),
-  );
-}
-
 export function normalizeScore(score: number): number {
   if (Number.isNaN(score)) return 0;
   return Math.max(0, Math.min(100, score)) / 100;

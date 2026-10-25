@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- Builder ----------
-FROM oven/bun:1.3.3-alpine AS builder
+FROM oven/bun:1.3.14-alpine AS builder
 WORKDIR /app
 
 ARG VITE_GRAPHQL_URL=http://localhost:4000/graphql
@@ -22,7 +22,7 @@ RUN bun run --filter contracts generate \
  && bun run --filter frontend generate \
  && bun run --filter frontend build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.30-alpine AS runtime
 
 # SPA + asset caching config
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf

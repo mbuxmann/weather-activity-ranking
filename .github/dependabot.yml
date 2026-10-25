@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directories: ["/apps/backend", "/apps/frontend"]
+    schedule:
+      interval: weekly

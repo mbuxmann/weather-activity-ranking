@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- Builder ----------
-FROM oven/bun:1.3.3-alpine AS builder
+FROM oven/bun:1.3.14-alpine AS builder
 WORKDIR /app
 
 # Workspace manifests first so install is cached when sources change
@@ -22,7 +22,7 @@ RUN bun run --filter contracts generate \
  && bun run --filter backend build
 
 # ---------- Runtime ----------
-FROM oven/bun:1.3.3-alpine AS runtime
+FROM oven/bun:1.3.14-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production \

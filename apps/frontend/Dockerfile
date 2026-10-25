@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- Builder ----------
-FROM oven/bun:1.3.14-alpine AS builder
+FROM oven/bun:1.4.4-alpine AS builder
 WORKDIR /app
 
 ARG VITE_GRAPHQL_URL=http://localhost:4000/graphql

@@ -22,7 +22,7 @@ RUN bun run --filter contracts generate \
  && bun run --filter frontend generate \
  && bun run --filter frontend build
 
-FROM nginx:1.30-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 
 # SPA + asset caching config
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
